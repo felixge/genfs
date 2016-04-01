@@ -1,6 +1,7 @@
 package genfs
 
 import (
+	"bytes"
 	"errors"
 	"io"
 	"net/http"
@@ -56,6 +57,7 @@ func (f *FS) Open(name string) (http.File, error) {
 	// state.
 	clone := &File{}
 	*clone = *file
+	clone.Reader = bytes.NewReader(clone.data)
 	return clone, nil
 }
 
@@ -69,11 +71,14 @@ func NewFile(path, name string, size int64, mode os.FileMode, t time.Time, isDir
 		modTime: t,
 		isDir:   isDir,
 		data:    data,
+		Reader:  bytes.NewReader(data),
 	}
 }
 
 // File is an in-memory file that implements http.File and os.FileInfo.
 type File struct {
+	io.Reader
+
 	path    string
 	name    string
 	size    int64
@@ -81,7 +86,8 @@ type File struct {
 	modTime time.Time
 	isDir   bool
 	data    []byte
-	fs      *FS
+
+	fs *FS
 }
 
 // check interface compliance
@@ -92,17 +98,6 @@ var _ = http.File(&File{})
 func (f *File) Close() error {
 	// @TODO return err when closing twice?
 	return nil
-}
-
-// Readdir is part of http.File.
-func (f *File) Read(p []byte) (int, error) {
-	n := copy(p, f.data)
-	f.data = f.data[n:]
-	if len(f.data) == 0 {
-		return n, io.EOF
-	} else {
-		return n, nil
-	}
 }
 
 // Seek is part of http.File.
