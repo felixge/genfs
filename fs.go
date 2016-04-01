@@ -12,12 +12,16 @@ import (
 // NewFS returns a new FS for the given files.
 func NewFS(files ...*File) *FS {
 	fs := &FS{
-		l: files,
+		l: make([]*File, len(files)),
 		m: make(map[string]*File, len(files)),
 	}
-	for _, file := range files {
-		file.fs = fs
-		fs.m[file.path] = file
+	for i, file := range files {
+		// Clone file so that the same file can be used with multiple FS instances.
+		clone := &File{}
+		*clone = *file
+		clone.fs = fs
+		fs.m[file.path] = clone
+		fs.l[i] = clone
 	}
 	return fs
 }
@@ -48,6 +52,8 @@ func (f *FS) Open(name string) (http.File, error) {
 		// @TODO Path error?
 		return nil, os.ErrNotExist
 	}
+	// Return a clone so that concurrently opened files can have their own read
+	// state.
 	clone := &File{}
 	*clone = *file
 	return clone, nil
