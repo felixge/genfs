@@ -2,7 +2,8 @@
 
 # genfs
 
-genfs is a program that simplifies embedding static files into Go binaries.
+genfs is a command line tool and library that simplifies embedding static files
+into Go binaries.
 
 ## Todo
 
