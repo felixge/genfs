@@ -46,12 +46,12 @@ func files(path, root string, ignore Filter) ([]*File, error) {
 	if err != nil {
 		return nil, err
 	}
+	if ignore(path) {
+		return nil, nil
+	}
 	relPath, err := filepath.Rel(root, path)
 	if err != nil {
 		return nil, err
-	}
-	if ignore(relPath) {
-		return nil, nil
 	}
 	result := &File{
 		path:    relPath,
