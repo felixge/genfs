@@ -5,6 +5,10 @@
 genfs is a command line tool and library that simplifies embedding static files
 into Go binaries.
 
+# License
+
+MIT, see LICENSE.txt.
+
 ## Todo
 
 * [ ] Docs
