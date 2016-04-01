@@ -30,7 +30,7 @@ func FilterRegexp(expr string) (Filter, error) {
 	}, nil
 }
 
-// Files recursively searches path and returns all files not matched by the
+// Files recursively searches path and returns all files not excluded by the
 // ignore filter or an error.
 func Files(path string, ignore Filter) ([]*File, error) {
 	return files(path, path, ignore)
