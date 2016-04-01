@@ -54,7 +54,7 @@ func DiffFS(t *testing.T, path string, got, want http.FileSystem) {
 	// @TODO test full readdir semantics
 	wantChildren, err := wantFile.Readdir(0)
 	if err != nil {
-		t.Fatalf("%s: %#v", path, err)
+		t.Fatal(err)
 	}
 	gotChildren, err := gotFile.Readdir(0)
 	if err != nil {
