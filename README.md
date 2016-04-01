@@ -13,4 +13,5 @@ MIT, see LICENSE.txt.
 
 * [ ] Docs
 * [ ] Full http.FileSystem/POSIX compliance
+* [ ] Official Release
 * [ ] Windows support
