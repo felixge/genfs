@@ -11,7 +11,8 @@ MIT, see LICENSE.txt.
 
 ## Todo
 
-* [ ] Docs
+* [ ] Support multiple file arguments for cli
 * [ ] Full http.FileSystem/POSIX compliance
+* [ ] Docs
 * [ ] Official Release
 * [ ] Windows support
