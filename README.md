@@ -11,6 +11,7 @@ MIT, see LICENSE.txt.
 
 ## Todo
 
+* [ ] Don't output errors when getting broken pipe.
 * [ ] Support multiple file arguments for cli
 * [ ] Full http.FileSystem/POSIX compliance
 * [ ] Docs
