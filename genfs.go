@@ -11,8 +11,11 @@ import (
 	"time"
 )
 
-type Filter func(string) bool
+// Filter is a func that returns true for file names that should be excluded.
+type Filter func(name string) bool
 
+// FilterNone does not match any file names, i.e. it includes all files when
+// used with the Files func.
 var FilterNone = func(string) bool { return false }
 
 // FilterRegexp returns a filter func for the given posix regexp expr, or an
@@ -27,14 +30,8 @@ func FilterRegexp(expr string) (Filter, error) {
 	}, nil
 }
 
-func Dir(path string) (*FS, error) {
-	files, err := Files(path, FilterNone)
-	if err != nil {
-		return nil, err
-	}
-	return NewFS(files...), nil
-}
-
+// Files recursively searches path and returns all files not matched by the
+// ignore filter or an error.
 func Files(path string, ignore Filter) ([]*File, error) {
 	return files(path, path, ignore)
 }
@@ -87,6 +84,9 @@ func files(path, root string, ignore Filter) ([]*File, error) {
 	return results, nil
 }
 
+// WriteSource writes the the given files as Go source to w, using the given
+// pkg name and varName. The varName is being assigned a http.FileSystem
+// compatible fs in the init function of the generated file.
 func WriteSource(w io.Writer, pkg, varName string, files []*File) error {
 
 	return tmpl.Execute(w, struct {

@@ -22,6 +22,15 @@ func NewFS(files ...*File) *FS {
 	return fs
 }
 
+// Dir returns a new FS for the given path.
+func Dir(path string) (*FS, error) {
+	files, err := Files(path, FilterNone)
+	if err != nil {
+		return nil, err
+	}
+	return NewFS(files...), nil
+}
+
 // FS is an in-memory file system that implements http.FileSystem.
 type FS struct {
 	m map[string]*File
