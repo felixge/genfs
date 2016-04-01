@@ -50,6 +50,7 @@ func DiffFS(t *testing.T, path string, got, want http.FileSystem) {
 		if !bytes.Equal(gotData, wantData) {
 			t.Fatalf("got=%s want=%s", gotData, wantData)
 		}
+		return
 	}
 	// @TODO test full readdir semantics
 	wantChildren, err := wantFile.Readdir(0)
