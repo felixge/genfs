@@ -2,4 +2,8 @@
 
 genfs is a program that simplifies embedding static files into Go binaries.
 
-TODO: DOCS
+## Todo
+
+* [ ] Docs
+* [ ] Full http.FileSystem/POSIX compliance
+* [ ] Windows support
