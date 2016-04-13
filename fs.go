@@ -151,3 +151,12 @@ func (f *File) Path() string { return f.path }
 
 // String returns the file data as a string. It's needed for WriteSource.
 func (f *File) String() string { return string(f.data) }
+
+// MustTime parses and returns the given time as RFC3339 or panics.
+func MustTime(s string) time.Time {
+	t, err := time.Parse(time.RFC3339, s)
+	if err != nil {
+		panic(err)
+	}
+	return t
+}
