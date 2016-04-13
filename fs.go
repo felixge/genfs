@@ -115,7 +115,7 @@ func (f *File) Stat() (os.FileInfo, error) {
 // Readdir is part of http.File.
 func (f *File) Readdir(count int) ([]os.FileInfo, error) {
 	// @TODO(fg) support full Readdir semantics, including EOF, etc.
-	if count <= 0 {
+	if count > 0 {
 		return nil, errors.New("genfs: only count <= 0 is supported right now")
 	}
 	var files []os.FileInfo
