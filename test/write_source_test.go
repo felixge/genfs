@@ -13,7 +13,7 @@ import (
 var genFS http.FileSystem
 
 func TestWriteSource(t *testing.T) {
-	files, err := genfs.Files(FixturePath(), genfs.FilterNone)
+	files, err := genfs.Files(FixturePath())
 	if err != nil {
 		t.Fatal(err)
 	}

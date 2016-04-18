@@ -29,7 +29,7 @@ func NewFS(files ...*File) *FS {
 
 // Dir returns a new FS for the given path.
 func Dir(path string) (*FS, error) {
-	files, err := Files(path, FilterNone)
+	files, err := Files(path)
 	if err != nil {
 		return nil, err
 	}

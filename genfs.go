@@ -11,32 +11,42 @@ import (
 	"time"
 )
 
-// Filter is a func that returns true for file names that should be excluded.
+// Filter is a func that returns true for file names that should be included.
 type Filter func(name string) bool
 
-// FilterNone does not match any file names, i.e. it includes all files when
-// used with the Files func.
-var FilterNone = func(string) bool { return false }
+// ExcludeRegexp returns a filter func that excludes file paths matching the
+// given expr, or an error.
+func ExcludeRegexp(expr string) (Filter, error) {
+	return regexpFilter(expr, true)
+}
 
-// FilterRegexp returns a filter func for the given posix regexp expr, or an
-// error.
-func FilterRegexp(expr string) (Filter, error) {
+// IncludeRegexp returns a filter func that includes file paths matching the
+// given expr, or an error.
+func IncludeRegexp(expr string) (Filter, error) {
+	return regexpFilter(expr, false)
+}
+
+func regexpFilter(expr string, exclude bool) (Filter, error) {
 	r, err := regexp.CompilePOSIX(expr)
 	if err != nil {
 		return nil, err
 	}
 	return func(name string) bool {
-		return r.MatchString(name)
+		ok := r.MatchString(name)
+		if exclude {
+			ok = !ok
+		}
+		return ok
 	}, nil
 }
 
 // Files recursively searches path and returns all files not excluded by the
 // ignore filter or an error.
-func Files(path string, ignore Filter) ([]*File, error) {
-	return files(path, path, ignore)
+func Files(path string, filters ...Filter) ([]*File, error) {
+	return files(path, path, filters)
 }
 
-func files(path, root string, ignore Filter) ([]*File, error) {
+func files(path, root string, filters []Filter) ([]*File, error) {
 	file, err := os.Open(path)
 	if err != nil {
 		return nil, err
@@ -46,8 +56,10 @@ func files(path, root string, ignore Filter) ([]*File, error) {
 	if err != nil {
 		return nil, err
 	}
-	if ignore(path) {
-		return nil, nil
+	for _, filter := range filters {
+		if !filter(path) {
+			return nil, nil
+		}
 	}
 	relPath, err := filepath.Rel(root, path)
 	if err != nil {
@@ -75,7 +87,7 @@ func files(path, root string, ignore Filter) ([]*File, error) {
 	results := make([]*File, 0, len(children)+1)
 	results = append(results, result)
 	for _, child := range children {
-		childResults, err := files(filepath.Join(path, child.Name()), root, ignore)
+		childResults, err := files(filepath.Join(path, child.Name()), root, filters)
 		if err != nil {
 			return nil, err
 		}
