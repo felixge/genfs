@@ -11,8 +11,8 @@ import (
 	"time"
 )
 
-// Filter is a func that returns true for file names that should be included.
-type Filter func(name string) bool
+// Filter is a func that returns true for file paths that should be included.
+type Filter func(name string, isDir bool) bool
 
 // ExcludeRegexp returns a filter func that excludes file paths matching the
 // given expr, or an error.
@@ -31,7 +31,10 @@ func regexpFilter(expr string, exclude bool) (Filter, error) {
 	if err != nil {
 		return nil, err
 	}
-	return func(name string) bool {
+	return func(name string, isDir bool) bool {
+		if isDir {
+			return true
+		}
 		ok := r.MatchString(name)
 		if exclude {
 			ok = !ok
@@ -56,8 +59,9 @@ func files(path, root string, filters []Filter) ([]*File, error) {
 	if err != nil {
 		return nil, err
 	}
+	isDir := stat.IsDir()
 	for _, filter := range filters {
-		if !filter(path) {
+		if !filter(path, isDir) {
 			return nil, nil
 		}
 	}
@@ -68,12 +72,12 @@ func files(path, root string, filters []Filter) ([]*File, error) {
 	result := &File{
 		path:    relPath,
 		name:    stat.Name(),
-		isDir:   stat.IsDir(),
+		isDir:   isDir,
 		size:    stat.Size(),
 		mode:    stat.Mode(),
 		modTime: stat.ModTime(),
 	}
-	if !stat.IsDir() {
+	if !isDir {
 		result.data, err = ioutil.ReadFile(path)
 		if err != nil {
 			return nil, err
