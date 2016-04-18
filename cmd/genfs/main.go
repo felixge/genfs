@@ -32,7 +32,7 @@ func run() error {
 		filters = append(filters, f)
 	}
 	if *excludeF != "" {
-		f, err := genfs.IncludeRegexp(*excludeF)
+		f, err := genfs.ExcludeRegexp(*excludeF)
 		if err != nil {
 			return fmt.Errorf("-exclude: %s\n", err)
 		}
